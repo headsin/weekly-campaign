@@ -1,0 +1,141 @@
+/* Main container for the Thank You page */
+.thank-you-page-container {
+    min-height: 100vh;
+    background: #F5F3FF; /* Uses the same light purple background */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+.thank-you-content {
+    width: 100%;
+    max-width: 550px; /* A bit narrower for a focused view */
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.thank-you-content .icon-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.thank-you-content .icon {
+    width: 120px;
+}
+
+/* General card styling */
+.card {
+    background-color: #ffffff;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.07);
+    padding: 2rem;
+    text-align: center;
+}
+
+/* Top Ticket Card Styles */
+.ticket-card h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 0.5rem 0;
+}
+
+.ticket-card > p {
+    color: #4b5563;
+    margin: 0 0 1.5rem 0;
+}
+
+.ticket-number-box {
+    background-color: #F5F3FF;
+    border: 1px dashed #C4B5FD;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    cursor: pointer;
+}
+
+.ticket-number-box span {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #6D28D9;
+    letter-spacing: 0.1em;
+}
+
+.next-step-box {
+    background: linear-gradient(to right, #d946ef, #8b5cf6);
+    color: #ffffff;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.copy-feedback {
+    font-weight: 600 !important;
+    color: #16A34A !important; /* Green color for success */
+}
+
+.next-step-box h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+}
+
+.next-step-box p {
+    margin: 0;
+    line-height: 1.6;
+}
+
+.next-step-box .mobile-number {
+    background-color: rgb(255 255 255 / 20%);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+    margin-inline: 0.25rem;
+    white-space: nowrap;
+}
+
+/* Bottom Tips Card Styles */
+.tips-card {
+    text-align: left;
+}
+
+.tips-card h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 1.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Simple confetti icon using CSS pseudo-element for the tips header */
+.tips-card h3::before {
+    content: '🎉';
+    font-size: 1.5rem;
+}
+
+.tips-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.tip-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #4b5563;
+    line-height: 1.5;
+}
+
+.tip-item svg {
+    flex-shrink: 0; /* Prevents icons from shrinking */
+}
