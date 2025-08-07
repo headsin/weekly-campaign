@@ -3,8 +3,6 @@ import { getFirestore } from "firebase/firestore";
 
 const ENV = import.meta.env;
 
-console.log(ENV)
-
 const firebaseConfig = {
   apiKey: ENV.VITE_FIREBASE_API_KEY,
   authDomain: ENV.VITE_FIREBASE_AUTH_DOMAIN,

@@ -31,20 +31,18 @@ const WeeklyLotery = () => {
         isNameError: false,
     });
 
-
     const nameRef = useRef(null);
     const emailRef = useRef(null);
     const mobileRef = useRef(null);
 
     useEffect(() => {
-        async function fetchEmails(params) {
+        async function fetchEmails() {
             const response = await fetch(`https://admin-api.headsin.co/api/v1/users/emails?fieldMask=email&secret=${import.meta.env.VITE_PASSWORD}`);
             const data = await response.json();
 
             for (let email of data) {
                 emails.set(email.email, true);
             }
-            console.log(emails)
         }
         fetchEmails();
     }, []);
@@ -108,8 +106,6 @@ const WeeklyLotery = () => {
 
         try {
             const ticketNumber = await getNextTicketNumber();
-            console.log("Your new ticket is:", ticketNumber);
-            setState({ ...state, isLoading: false });
 
             // Use the exact URL from your AWS console
             const apiUrl = import.meta.env.VITE_LAMBDA_URL;
@@ -121,9 +117,11 @@ const WeeklyLotery = () => {
             });
 
             if (!response.ok) {
+                setState({ ...state, isLoading: false });
                 throw new Error('Failed to save data to sheet.');
             }
 
+            setState({ ...state, isLoading: false });
             navigate('/thank-you', { state: { name: name, ticketNumber } });
         } catch (error) {
             alert(error.message);
