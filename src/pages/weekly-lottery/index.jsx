@@ -107,7 +107,6 @@ const WeeklyLotery = () => {
         try {
             const ticketNumber = await getNextTicketNumber();
 
-            // Use the exact URL from your AWS console
             const apiUrl = import.meta.env.VITE_LAMBDA_URL;
 
             const response = await fetch(apiUrl, {

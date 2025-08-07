@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom'; // Import useLocation to get state
 import './styles.css'; // Import the new CSS file
+import { useEffect } from 'react';
 
 // --- SVG Icon Components for the Tips Section ---
 
@@ -28,7 +29,7 @@ const AnnounceIcon = () => (
 
 const ThankYouPage = () => {
   const location = useLocation();
-  const { name, ticketNumber } = location.state || { name: 'User', ticketNumber: 'HEADSIN0000' };
+  const { name, ticketNumber } = location.state || { name: '', ticketNumber: '' };
   const navigate = useNavigate();
 
   const [isCopied, setIsCopied] = useState(false);
@@ -43,14 +44,19 @@ const ThankYouPage = () => {
       }, 2000);
     }).catch(err => {
       console.error('Failed to copy text: ', err);
-      // You could add fallback logic here for older browsers if needed
     });
   };
 
-  if (!ticketNumber.startsWith("HEADSIN")) {
-    navigate("/");
-    return
+  useEffect(() => {
+    if (!ticketNumber.startsWith("HEADSIN")) {
+      return navigate("/");
+    }
+  }, [ticketNumber])
+
+  if(!ticketNumber.startsWith("HEADSIN")) {
+    return null
   }
+
 
   return (
     <div className="thank-you-page-container">

@@ -26,7 +26,6 @@ const Modal = ({ isOpen, onClose }) => {
         }
 
         return () => {
-            console.log("Cleanup")
             document.body.style.overflow = 'unset';
         };
     }, [isOpen]);
