@@ -9,6 +9,7 @@ import { useRef } from 'react';
 import { doc, runTransaction } from "firebase/firestore";
 import { db } from '../../services/firebase';
 import { isValidEmail, isValidIndianMobile } from '../../utils/validations';
+import { useCallback } from 'react';
 
 const StepIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -17,7 +18,7 @@ const StepIcon = () => (
     </svg>
 );
 
-const emails = new Map()
+// const emails = new Map()
 
 // --- Main App Component ---
 const WeeklyLotery = () => {
@@ -31,21 +32,28 @@ const WeeklyLotery = () => {
         isNameError: false,
     });
 
+    const [emails, setEmails] = useState([]);
+
     const nameRef = useRef(null);
     const emailRef = useRef(null);
     const mobileRef = useRef(null);
 
-    useEffect(() => {
-        async function fetchEmails() {
-            const response = await fetch(`https://admin-api.headsin.co/api/v1/users/emails?fieldMask=email&secret=${import.meta.env.VITE_PASSWORD}`);
-            const data = await response.json();
-
-            for (let email of data) {
-                emails.set(email.email, true);
-            }
+    const fetchEmails = useCallback(async () => {
+        const response = await fetch(`https://admin-api.headsin.co/api/v1/users/emails?fieldMask=email&secret=${import.meta.env.VITE_PASSWORD}`);
+        const data = await response.json();
+        let emailTemp = [];
+        for (let email of data) {
+            emailTemp.push(email.email);
         }
-        fetchEmails();
-    }, []);
+
+        setEmails(emailTemp)
+    }, [emails])
+
+    useEffect(() => {
+        if (emails.length === 0) {
+            fetchEmails();
+        }
+    }, [emails]);
 
     const getNextTicketNumber = async () => {
         const counterRef = doc(db, "lotteryCounters", import.meta.env.VITE_FIREBASE_DOC_ID); // Use a consistent document ID
@@ -74,12 +82,23 @@ const WeeklyLotery = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        setState(prev => ({ ...prev, isSubmitError: false, isEmailError: false, isNameError: false }));
-
         // 3. Get values directly from the refs
         const name = nameRef.current?.value;
         const email = emailRef.current?.value;
         const mobile = mobileRef.current?.value;
+
+        if(emails.length === 0) {
+            return;
+        }
+
+        if (!emails.includes(email)) {
+            setModalOpen(true);
+            return;
+        }
+
+        setState(prev => ({ ...prev, isSubmitError: false, isEmailError: false, isNameError: false }));
+
+
 
         if (!name || name.length < 3) {
             setState(pre => ({ ...pre, isNameError: true }));
@@ -96,10 +115,7 @@ const WeeklyLotery = () => {
             return;
         }
 
-        if (emails.has(email)) {
-            setModalOpen(true);
-            return;
-        }
+
 
         setState({ ...state, isLoading: true });
 
@@ -145,7 +161,7 @@ const WeeklyLotery = () => {
                             </div>
                         </div>
                         <div className="header-title">
-                            <h1>🎉 Join the HeadsIn Lootery Camp <br />& Win ₹1000! 🎉</h1>
+                            <h1>🎉 Join the HeadsIn Lottery Camp <br />& Win ₹1000! 🎉</h1>
                         </div>
                         <p>Sign up today & stand a chance to grab exciting cash rewards. It only takes 30 seconds!</p>
                     </div>
@@ -240,6 +256,9 @@ const WeeklyLotery = () => {
 
 
                     <p className='footer-text'>HeadsIn connects job seekers with their dream opportunities while rewarding them for taking the first step towards their career goals.</p>
+
+                    <div style={{ borderBottom: '1px solid #0000001a', width: '100%' }} />
+
                     <ul className='footer-links'>
                         <li>
                             <a href='https://headsin.co/terms-and-conditions'>Terms & Conditions</a>
