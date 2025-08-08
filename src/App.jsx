@@ -1,7 +1,9 @@
 import { Route, Routes } from 'react-router-dom';
-import NotFoundPage from './pages/not-found';
-import WeeklyLottery from './pages/weekly-lottery';
-import ThankYouPage from './pages/thank-you';
+import { lazy } from 'react';
+
+const NotFoundPage = lazy(() => import('./pages/not-found'));
+const WeeklyLottery = lazy(() => import('./pages/weekly-lottery'));
+const ThankYouPage = lazy(() => import('./pages/thank-you'));
 
 const App = () => {
   return (
