@@ -6,7 +6,7 @@ import Modal from '../components/modal';
 import { useNavigate } from 'react-router-dom';
 import { useRef } from 'react';
 
-import { doc, runTransaction } from "firebase/firestore";
+import { doc, getDoc, setDoc, runTransaction } from "firebase/firestore";
 import { db } from '../../services/firebase';
 import { isValidEmail, isValidIndianMobile } from '../../utils/validations';
 import { useCallback } from 'react';
@@ -56,7 +56,7 @@ const WeeklyLotery = () => {
     }, [emails]);
 
     const getNextTicketNumber = async () => {
-        const counterRef = doc(db, "lotteryCounters", import.meta.env.VITE_FIREBASE_DOC_ID); // Use a consistent document ID
+        const counterRef = doc(db, "lotteryCounters", import.meta.env.VITE_FIREBASE_DOC_ID);
 
         try {
             const newTicketNumber = await runTransaction(db, async (transaction) => {
@@ -79,6 +79,43 @@ const WeeklyLotery = () => {
         }
     };
 
+    const getOrCreateUserTicket = async (email) => {
+        // Use the user's email as the unique document ID for easy lookups
+        const userDocRef = doc(db, "lotteryUsers", email);
+
+        try {
+            // 1. First, try to get the document.
+            const userDoc = await getDoc(userDocRef);
+
+            // 2. Check if the document exists.
+            if (userDoc.exists()) {
+                // USER EXISTS: Return their old ticket number.
+                console.log("User already exists. Returning old ticket:", userDoc.data().ticketNumber);
+                return { ticketNumber: userDoc.data().ticketNumber, isNew: false };
+            } else {
+                // USER IS NEW: Create a new ticket and a new user document.
+                console.log("New user. Creating new ticket...");
+
+                // a. Get a new incremental ticket number.
+                const newTicketNumber = await getNextTicketNumber();
+
+                // b. Create the new user document.
+                await setDoc(userDocRef, {
+                    email: email,
+                    ticketNumber: newTicketNumber
+                });
+
+                console.log("Successfully created new user with ticket:", newTicketNumber);
+                return { ticketNumber: newTicketNumber, isNew: true };
+            }
+        } catch (error) {
+            console.error("Error in getOrCreateUserTicket: ", error);
+            throw new Error("Could not process user registration.");
+        }
+    };
+
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -87,7 +124,7 @@ const WeeklyLotery = () => {
         const email = emailRef.current?.value;
         const mobile = mobileRef.current?.value;
 
-        if(emails.length === 0) {
+        if (emails.length === 0) {
             return;
         }
 
@@ -97,8 +134,6 @@ const WeeklyLotery = () => {
         }
 
         setState(prev => ({ ...prev, isSubmitError: false, isEmailError: false, isNameError: false }));
-
-
 
         if (!name || name.length < 3) {
             setState(pre => ({ ...pre, isNameError: true }));
@@ -115,25 +150,24 @@ const WeeklyLotery = () => {
             return;
         }
 
-
-
         setState({ ...state, isLoading: true });
 
-
         try {
-            const ticketNumber = await getNextTicketNumber();
-
             const apiUrl = import.meta.env.VITE_LAMBDA_URL;
 
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, phone: mobile, ticketNumber }),
-            });
+            const { ticketNumber, isNew } = await getOrCreateUserTicket(email);
 
-            if (!response.ok) {
-                setState({ ...state, isLoading: false });
-                throw new Error('Failed to save data to sheet.');
+            if (isNew) {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, phone: mobile, ticketNumber }),
+                });
+
+                if (!response.ok) {
+                    setState({ ...state, isLoading: false });
+                    throw new Error('Failed to save data to sheet.');
+                }
             }
 
             setState({ ...state, isLoading: false });
@@ -147,10 +181,8 @@ const WeeklyLotery = () => {
 
     return (
         <div className="weekly-lottery-page">
-
             <header className="page-header">
                 <div className="content-wrapper">
-
                     <div className='inner-container'>
                         <img src={`https://headsin.co/logo.webp`} alt="Logo" className='icon' />
                         <div className='animations'>
@@ -161,13 +193,11 @@ const WeeklyLotery = () => {
                             </div>
                         </div>
                         <div className="header-title">
-                            <h1>🎉 Join the HeadsIn Lottery Camp <br />& Win ₹1000! 🎉</h1>
+                            <h1>HeadsIn Lottery Camp</h1>
                         </div>
-                        <p>Sign up today & stand a chance to grab exciting cash rewards. It only takes 30 seconds!</p>
+                        <p>Win ₹1000 While Finding Your Next Dream Job!</p>
                     </div>
-
                 </div>
-
             </header>
 
             <main className="main-content">
@@ -242,7 +272,7 @@ const WeeklyLotery = () => {
                                 </div>
                                 <div className="feature-card">
                                     <h3>Simple 2-Step Entry Process</h3>
-                                    <p>Quick and easy registration in just 30 seconds.</p>
+                                    <p>Quick and easy registration in just 2 minutes.</p>
                                 </div>
                             </div>
                         </div>

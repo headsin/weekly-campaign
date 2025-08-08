@@ -2,7 +2,6 @@
 .weekly-lottery-page {
     min-height: 100vh;
     margin-top: 2rem;
-    padding-inline: 0.5rem;
 }
 
 .content-wrapper {
@@ -21,10 +20,8 @@
     text-align: center;
     text-wrap: balance;
     margin-bottom: 2.5rem;
-}
 
-.page-header .inner-container {
-    max-width: 1000px;
+    padding-inline: 1rem;
 }
 
 .inner-container .animations {
@@ -68,10 +65,10 @@
 }
 
 .page-header h1 {
-    font-weight: 400;
+    font-weight: 600;
     color: black;
     margin: 0;
-    font-size: 1.3rem;
+    font-size: 2rem;
     line-clamp: 2;
     -webkit-line-clamp: 2;
 }
@@ -91,6 +88,10 @@
     padding: 2.5rem 0 4.5rem 0;
 
     background: linear-gradient(0deg, rgba(253, 208, 220, 0.1) 0%, rgba(255, 255, 255, 1) 100%);
+
+    .content-wrapper {
+        padding-inline: 1rem;
+    }
 }
 
 /* Steps Section */
@@ -367,13 +368,13 @@
 
 @media (min-width: 500px) {
     .page-header h1 {
-        font-size: 2rem;
+        font-size: 3rem;
     }
 }
 
 @media (min-width: 1024px) {
     .page-header h1 {
-        font-size: 3.25rem;
+        font-size: 4rem;
     }
 }
 
